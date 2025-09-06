@@ -2,9 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import { GeminiService } from './lib/geminiService.js';
 import convertRouter from './routes/convert.js';
 
-// Load environment variables from .env file
+// Load environment variables from .env file FIRST
 dotenv.config();
 
 const app = express();
