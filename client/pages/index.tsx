@@ -104,7 +104,7 @@ export default function Home() {
     };
 
     return (
-        <>
+        <div className={`flex flex-col min-h-screen font-sans transition-colors duration-300 ${theme === 'dark' ? 'bg-brand-dark text-white' : 'bg-gray-50 text-black'}`}>
             <Head>
                 <title>AI Code Converter - DevTranslate</title>
                 <meta name="description" content="Convert code from one language to another" />
@@ -143,16 +143,23 @@ export default function Home() {
                     </div>
                 </header>
 
-                <main className="max-w-7xl mx-auto p-6 relative z-10">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div className="bg-white/80 dark:bg-brand-dark/50 p-6 rounded-2xl shadow-lg border border-black/10 dark:border-white/10 backdrop-blur-lg">
+                <main className="flex-grow w-full max-w-7xl mx-auto p-4 md:p-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+                        <div className="flex flex-col space-y-4">
                             <div className="flex justify-between items-center mb-4">
                                 <label className="text-lg font-medium">Source Code</label>
                                 <Select value={sourceLang} onChange={(e) => setSourceLang(e.target.value)}>
                                     {languages.map((lang) => <option key={lang} value={lang}>{lang}</option>)}
                                 </Select>
                             </div>
-                            <CodeEditor value={inputCode} onChange={setInputCode} language={sourceLang} height="400px" />
+                            <div className="flex-grow">
+                                <CodeEditor
+                                    language={sourceLang}
+                                    value={inputCode}
+                                    onChange={(value) => setInputCode(value || '')}
+                                    readOnly={loading}
+                                />
+                            </div>
                         </div>
 
                         <div className="bg-white/80 dark:bg-brand-dark/50 p-6 rounded-2xl shadow-lg border border-black/10 dark:border-white/10 backdrop-blur-lg">
@@ -166,25 +173,42 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {analysis && (
-                        <div className="mt-8 bg-white/80 dark:bg-brand-dark/50 p-6 rounded-2xl shadow-lg border border-black/10 dark:border-white/10 backdrop-blur-lg">
-                            <h2 className="text-xl font-semibold mb-4">AI Analysis</h2>
-                            <p className="text-sm mb-4 text-gray-600 dark:text-gray-300">{analysis}</p>
-                            {fixedCode && (
-                                <>
-                                    <CodeEditor value={fixedCode} onChange={() => {}} language={sourceLang} height="250px" readOnly />
-                                    <div className="flex gap-4 mt-4">
-                                        <Button onClick={handleReplaceFixed} variant="secondary">
-                                            Use Fixed Code
-                                        </Button>
-                                        <Button onClick={() => handleCopy(fixedCode)} variant="outline">
-                                            Copy Fixed Code
-                                        </Button>
-                                    </div>
-                                </>
-                            )}
+                    {/* Output/Analysis Section */}
+                    <div className="flex flex-col space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h3 className="font-semibold">Output Code ({targetLang})</h3>
+                            <Button onClick={() => handleCopy(outputCode)} variant="ghost" size="sm">Copy</Button>
                         </div>
-                    )}
+                        <div className="flex-grow">
+                            <CodeEditor
+                                language={targetLang}
+                                value={outputCode}
+                                onChange={(value: string | undefined) => {}}
+                                readOnly
+                            />
+                        </div>
+                        {analysis && (
+                            <AnalysisPanel
+                                analysis={analysis.split('\n')}
+                                loading={loading}
+                                onCopyAnalysis={() => handleCopy(analysis)}
+                            />
+                        )}
+                        {fixedCode && (
+                            <div className="bg-brand-dark/50 p-4 rounded-lg">
+                                <h3 className="font-semibold mb-2">Suggested Fix</h3>
+                                <CodeEditor
+                                    language={sourceLang}
+                                    value={fixedCode}
+                                    onChange={(value: string | undefined) => {}}
+                                    readOnly
+                                />
+                                <div className="flex gap-4 mt-4">
+                                    <Button onClick={handleReplaceFixed} variant="secondary">Use This Fix</Button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                     <div className="mt-8 flex justify-center gap-6">
                         <Button onClick={handleConvert} disabled={loading} size="lg">
@@ -202,7 +226,7 @@ export default function Home() {
                     )}
                 </main>
             </div>
-        </>
+        </div>
     );
 }
 
