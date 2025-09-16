@@ -10,85 +10,32 @@ interface CodeEditorProps {
   readOnly?: boolean;
 }
 
-const CodeEditor = ({
-  value,
-  onChange,
-  language,
-  height,
-  className,
-  readOnly = false,
-}: CodeEditorProps) => {
+export default function CodeEditor({ language, value, onChange, readOnly = false }: CodeEditorProps) {
   const { theme } = useTheme();
 
-  const getMonacoLanguage = (lang: string) => {
-    const languageMap: { [key: string]: string } = {
-      'Python': 'python',
-      'Java': 'java', 
-      'JavaScript': 'javascript',
-      'C#': 'csharp',
-      'python': 'python',
-      'java': 'java',
-      'javascript': 'javascript',
-      'typescript': 'typescript',
-      'csharp': 'csharp',
-      'js': 'javascript',
-      'py': 'python',
-      'cs': 'csharp',
-      'ts': 'typescript'
-    };
-    return languageMap[lang] || 'plaintext';
-  };
-
   return (
-    <div className={className} style={{ height }}>
+    <div className="border border-brand-dark/20 dark:border-white/20 rounded-lg overflow-hidden h-full">
       <Editor
-        height={height}
-        language={getMonacoLanguage(language)}
+        height="100%"
+        language={language.toLowerCase()}
         value={value}
-        onChange={(value) => onChange(value || '')}
-        theme={theme === 'dark' ? 'vs-dark' : 'vs'}
+        onChange={onChange}
+        theme={theme === 'dark' ? 'vs-dark' : 'vs-light'}
         options={{
-          readOnly,
-          fontSize: 20,
-          fontFamily: '"Fira Code", "Cascadia Code", "JetBrains Mono", Consolas, "Courier New", monospace',
-          minimap: { enabled: false },
+          readOnly: readOnly,
+          minimap: { enabled: true },
+          fontSize: 14,
           wordWrap: 'on',
-          automaticLayout: true,
           scrollBeyondLastLine: false,
-          folding: true,
-          lineNumbers: 'on',
-          renderWhitespace: 'selection',
-          tabSize: 4,
-          insertSpaces: true,
-          formatOnPaste: true,
-          formatOnType: true,
+          automaticLayout: true,
           bracketPairColorization: { enabled: true },
           colorDecorators: true,
-          semanticHighlighting: { enabled: true },
           suggest: {
             showKeywords: true,
             showSnippets: true,
-            showFunctions: true,
-            showConstructors: true,
-            showClasses: true,
-            showModules: true,
+            showWords: true,
           },
-          quickSuggestions: {
-            other: true,
-            comments: true,
-            strings: true
-          },
-          parameterHints: {
-            enabled: true,
-            cycle: true
-          },
-          hover: {
-            enabled: true,
-            delay: 300
-          },
-          showUnused: true,
-          showDeprecated: true,
-          occurrencesHighlight: 'singleFile',
+          occurrencesHighlight: 'multiFile',
           selectionHighlight: true,
           codeLens: true,
           contextmenu: true,
@@ -97,63 +44,33 @@ const CodeEditor = ({
           monaco.editor.defineTheme('enhanced-dark', {
             base: 'vs-dark',
             inherit: true,
-            rules: [
-              { token: 'keyword', foreground: '569CD6', fontStyle: 'bold' },
-              { token: 'string', foreground: 'CE9178' },
-              { token: 'number', foreground: 'B5CEA8' },
-              { token: 'comment', foreground: '6A9955', fontStyle: 'italic' },
-              { token: 'type', foreground: '4EC9B0' },
-              { token: 'function', foreground: 'DCDCAA' },
-            ],
+            rules: [],
             colors: {
-              'editor.background': '#1e1e1e',
-              'editor.foreground': '#d4d4d4',
-              'editorLineNumber.foreground': '#858585',
-              'editor.selectionBackground': '#264f78',
-              'editor.inactiveSelectionBackground': '#3a3d41',
+              'editor.background': '#0D001F',
+              'editor.foreground': '#E0E0E0',
             }
           });
-
           monaco.editor.defineTheme('enhanced-light', {
             base: 'vs',
             inherit: true,
-            rules: [
-              { token: 'keyword', foreground: '0000FF', fontStyle: 'bold' },
-              { token: 'string', foreground: 'A31515' },
-              { token: 'number', foreground: '098658' },
-              { token: 'comment', foreground: '008000', fontStyle: 'italic' },
-              { token: 'type', foreground: '267F99' },
-              { token: 'function', foreground: '795E26' },
-            ],
+            rules: [],
             colors: {
               'editor.background': '#ffffff',
               'editor.foreground': '#000000',
             }
           });
-
-          console.log('Monaco editor loaded with enhanced syntax highlighting');
         }}
         onMount={(editor, monaco) => {
           const currentTheme = theme === 'dark' ? 'enhanced-dark' : 'enhanced-light';
           monaco.editor.setTheme(currentTheme);
 
-          const observer = new MutationObserver(() => {
-            const newTheme = theme === 'dark' ? 'enhanced-dark' : 'enhanced-light';
-            monaco.editor.setTheme(newTheme);
+          editor.updateOptions({
+            semanticHighlighting: {
+              enabled: true,
+            },
           });
-
-          if (typeof document !== 'undefined') {
-            observer.observe(document.documentElement, {
-              attributes: true,
-              attributeFilter: ['class']
-            });
-          }
-
-          return () => observer.disconnect();
         }}
       />
     </div>
   );
-};
-
-export default CodeEditor;
+}
