@@ -44,11 +44,11 @@ export default function HistoryPage() {
             Conversion History
           </h1>
           <div className="flex items-center space-x-2">
-            <Link href="/" asChild>
-              <Button variant="secondary" size="sm">Converter</Button>
+            <Link href="/" passHref>
+              <a><Button variant="secondary" size="sm">Converter</Button></a>
             </Link>
-            <Link href="/landing" asChild>
-              <Button variant="secondary" size="sm">About</Button>
+            <Link href="/landing" passHref>
+              <a><Button variant="secondary" size="sm">About</Button></a>
             </Link>
             <Button onClick={toggleTheme} variant="ghost" size="icon">
               {theme === 'dark' ? '☀️' : '🌙'}
@@ -63,8 +63,8 @@ export default function HistoryPage() {
         ) : items.length === 0 ? (
           <div className="text-center py-20 bg-brand-dark/50 rounded-lg">
             <p className="text-gray-400">No history found.</p>
-            <Link href="/" asChild>
-              <Button className="mt-4">Start Converting</Button>
+            <Link href="/" passHref>
+              <a><Button className="mt-4">Start Converting</Button></a>
             </Link>
           </div>
         ) : (
