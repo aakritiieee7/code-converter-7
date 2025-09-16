@@ -1,13 +1,18 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import axios from 'axios';
-import CodeEditor from '../components/CodeEditor';
-import { Select } from '../components/ui/select';
+import dynamic from 'next/dynamic'; 
+import { LANGUAGES, Language } from '../lib/languages';
+import { saveHistory, setItemToRerun } from '../lib/historyService';
 import Button from '../components/ui/button';
-import { useTheme } from '../lib/themeContext';
-import { addToHistory, getItemToRerun } from '../lib/historyService';
-import { useRouter } from 'next/router'; 
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+
+const CodeEditor = dynamic(() => import('../components/CodeEditor'), {
+  ssr: false,
+  loading: () => <div className="h-[300px] md:h-[400px] bg-brand-dark/50 rounded-lg flex items-center justify-center"><p>Loading Editor...</p></div>
+});
+
+import AnalysisPanel from '../components/AnalysisPanel';
 
 const languages = ['Python', 'Java', 'JavaScript', 'C#'];
 
@@ -34,7 +39,7 @@ export default function Home() {
         }
     }, []);
 
-    const apiBase = 'http://localhost:5001/api';
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
 
     async function handleConvert() {
         if (!inputCode.trim()) {
@@ -121,12 +126,16 @@ export default function Home() {
                             </span>
                         </div>
                         <div className="flex items-center space-x-2">
-                            <Button href="/history" variant="secondary" size="sm">
-                                History
-                            </Button>
-                            <Button href="/landing" variant="secondary" size="sm">
-                                About
-                            </Button>
+                            <Link href="/history" passHref>
+                                <Button as="a" variant="secondary" size="sm">
+                                    History
+                                </Button>
+                            </Link>
+                            <Link href="/landing" passHref>
+                                <Button as="a" variant="secondary" size="sm">
+                                    About
+                                </Button>
+                            </Link>
                             <Button onClick={toggleTheme} variant="ghost" size="icon">
                                 {theme === 'dark' ? '☀️' : '🌙'}
                             </Button>

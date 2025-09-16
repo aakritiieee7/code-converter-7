@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import { useTheme } from '../lib/themeContext';
-import Button from '../components/ui/button'; 
+import Button from '../components/ui/button';
+import Link from 'next/link'; // Add this import
 
 const FeatureCard = ({ icon, title, description }: { icon: string; title:string; description: string }) => (
   <div className="bg-white/10 dark:bg-brand-dark/50 p-6 rounded-2xl shadow-lg border border-white/10 backdrop-blur-lg hover:scale-105 hover:-rotate-1 transition-transform duration-300">
@@ -35,9 +36,11 @@ export default function LandingPage() {
               </span>
             </div>
             <div className="flex items-center space-x-2">
-              <Button href="/" variant="secondary" size="sm">
-                Converter
-              </Button>
+              <Link href="/" passHref>
+                <Button as="a" variant="secondary" size="sm">
+                  Converter
+                </Button>
+              </Link>
             </div>
           </div>
         </header>
@@ -52,9 +55,11 @@ export default function LandingPage() {
                 Use the power of AI to convert, fix, and understand code across different programming languages.
               </p>
               <div className="flex gap-4 justify-center">
-                <Button href="/" size="lg">
-                  Start Converting →
-                </Button>
+                <Link href="/" passHref>
+                    <Button as="a" size="lg">
+                        Start Converting →
+                    </Button>
+                </Link>
               </div>
             </div>
           </section>

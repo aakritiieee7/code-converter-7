@@ -2,9 +2,14 @@ import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic'; 
 import Button from '../components/ui/button';
-import CodeEditor from '../components/CodeEditor';
 import { getHistory, HistoryItem, setItemToRerun } from '../lib/historyService';
+
+const CodeEditor = dynamic(() => import('../components/CodeEditor'), {
+  ssr: false,
+  loading: () => <div className="h-[200px] bg-brand-dark/50 rounded-lg flex items-center justify-center"><p>Loading Editor...</p></div>
+});
 
 export default function HistoryPage() {
   const [items, setItems] = useState<HistoryItem[]>([]);
@@ -38,12 +43,16 @@ export default function HistoryPage() {
             Conversion History
           </h1>
           <div className="flex items-center space-x-2">
-            <Button href="/" variant="secondary" size="sm">
-              Converter
-            </Button>
-            <Button href="/landing" variant="secondary" size="sm">
-              About
-            </Button>
+            <Link href="/" passHref>
+              <Button as="a" variant="secondary" size="sm">
+                Converter
+              </Button>
+            </Link>
+            <Link href="/landing" passHref>
+              <Button as="a" variant="secondary" size="sm">
+                About
+              </Button>
+            </Link>
           </div>
         </div>
       </header>
@@ -54,7 +63,9 @@ export default function HistoryPage() {
         ) : items.length === 0 ? (
           <div className="text-center py-20 bg-brand-dark/50 rounded-lg">
             <p className="text-gray-400">No history found.</p>
-            <Button href="/" className="mt-4">Start Converting</Button>
+            <Link href="/" passHref>
+              <Button as="a" className="mt-4">Start Converting</Button>
+            </Link>
           </div>
         ) : (
           <div className="space-y-4">
