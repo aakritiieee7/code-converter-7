@@ -1,20 +1,60 @@
-import * as React from 'react';
+import React from 'react';
 import { cn } from '../../lib/utils';
 
-export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('rounded-xl border border-white/10 bg-white/5 shadow-xl backdrop-blur', className)} {...props} />;
+interface CardProps {
+  className?: string;
+  children: React.ReactNode;
 }
 
-export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('p-4 border-b border-white/10', className)} {...props} />;
+export const Card: React.FC<CardProps> = ({ className = '', children, ...props }) => {
+  return (
+    <div className={`bg-white dark:bg-gray-800 rounded-lg shadow ${className}`} {...props}>
+      {children}
+    </div>
+  );
+};
+
+interface CardContentProps {
+  className?: string;
+  children: React.ReactNode;
 }
 
-export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('p-4', className)} {...props} />;
-}
+export const CardContent: React.FC<CardContentProps> = ({ className = '', children, ...props }) => {
+  return (
+    <div className={`p-6 ${className}`} {...props}>
+      {children}
+    </div>
+  );
+};
 
-export function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h3 className={cn('text-lg font-semibold', className)} {...props} />;
-}
+export const CardHeader: React.FC<CardContentProps> = ({ className = '', children, ...props }) => {
+  return (
+    <div className={`p-6 pb-0 ${className}`} {...props}>
+      {children}
+    </div>
+  );
+};
 
-export default Card; 
+export const CardTitle: React.FC<CardContentProps> = ({ className = '', children, ...props }) => {
+  return (
+    <h3 className={`text-lg font-semibold ${className}`} {...props}>
+      {children}
+    </h3>
+  );
+};
+
+export const CardDescription: React.FC<CardContentProps> = ({ className = '', children, ...props }) => {
+  return (
+    <p className={`text-sm text-gray-600 dark:text-gray-400 ${className}`} {...props}>
+      {children}
+    </p>
+  );
+};
+
+export const CardFooter: React.FC<CardContentProps> = ({ className = '', children, ...props }) => {
+  return (
+    <div className={`p-6 pt-0 ${className}`} {...props}>
+      {children}
+    </div>
+  );
+};

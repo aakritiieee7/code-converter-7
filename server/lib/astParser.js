@@ -10,7 +10,6 @@ export class ASTParser {
     this.supportedLanguages = ['javascript', 'typescript', 'python', 'java', 'csharp'];
   }
 
-  // Parse JavaScript/TypeScript code into AST
   parseJavaScript(code, isTypeScript = false) {
     try {
       const ast = parse(code, {
@@ -25,7 +24,6 @@ export class ASTParser {
     }
   }
 
-  // Parse Python-like syntax (simplified)
   parsePython(code) {
     const lines = code.split('\n');
     const ast = {
@@ -38,7 +36,6 @@ export class ASTParser {
       const trimmed = line.trim();
       if (!trimmed || trimmed.startsWith('#')) return;
 
-      // Simple function detection
       if (trimmed.startsWith('def ')) {
         const match = trimmed.match(/def\s+(\w+)\s*\((.*?)\)/);
         if (match) {
@@ -53,7 +50,6 @@ export class ASTParser {
           });
         }
       }
-      // Simple class detection
       else if (trimmed.startsWith('class ')) {
         const match = trimmed.match(/class\s+(\w+)/);
         if (match) {
@@ -69,7 +65,6 @@ export class ASTParser {
     return { ast, success: true, error: null };
   }
 
-  // Parse Java-like syntax (simplified)
   parseJava(code) {
     const ast = {
       type: 'Program',
@@ -77,7 +72,6 @@ export class ASTParser {
       sourceType: 'script'
     };
 
-    // Simple class detection
     const classMatch = code.match(/public\s+class\s+(\w+)/);
     if (classMatch) {
       ast.body.push({
@@ -90,7 +84,6 @@ export class ASTParser {
     return { ast, success: true, error: null };
   }
 
-  // Generate code from AST
   generateCode(ast, targetLanguage) {
     try {
       if (targetLanguage === 'javascript' || targetLanguage === 'typescript') {
@@ -101,14 +94,12 @@ export class ASTParser {
         return { code: output.code, success: true, error: null };
       }
       
-      // For other languages, we'll use a simple transformation
       return this.transformASTToString(ast, targetLanguage);
     } catch (error) {
       return { code: '', success: false, error: error.message };
     }
   }
 
-  // Transform AST to string representation for non-JS languages
   transformASTToString(ast, targetLanguage) {
     let code = '';
     
@@ -168,7 +159,6 @@ export class ASTParser {
     return code;
   }
 
-  // Analyze code structure and extract metadata
   analyzeCode(ast) {
     const analysis = {
       functions: [],

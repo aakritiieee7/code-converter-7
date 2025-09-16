@@ -1,20 +1,19 @@
-import * as React from 'react';
-import { cn } from '../../lib/utils';
+import React from 'react';
 
-type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement>;
+interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  children: React.ReactNode;
+}
 
-export function Select({ className, children, ...props }: React.PropsWithChildren<SelectProps>) {
+export const Select: React.FC<SelectProps> = ({ children, className = '', ...props }) => {
+  const baseStyles = 'p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-hot-pink';
+  const themeStyles = 'bg-gray-50 border-gray-300 text-gray-900 dark:bg-brand-dark/50 dark:border-white/20 dark:text-white';
+  const finalClassName = `${baseStyles} ${themeStyles} ${className}`;
+
   return (
-    <select
-      className={cn(
-        'w-full rounded-lg border border-white/10 bg-black/40 p-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-400',
-        className
-      )}
-      {...props}
-    >
+    <select className={finalClassName} {...props}>
       {children}
     </select>
   );
-}
+};
 
-export default Select; 
+export default Select;

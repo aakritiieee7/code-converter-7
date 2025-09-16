@@ -1,40 +1,28 @@
-import { Router } from 'express';
+import express from 'express';
 import { GeminiService } from '../lib/geminiService.js';
-import { CodeAnalyzer } from '../lib/codeAnalyzer.js';
 
-const router = Router();
+const router = express.Router();
 
 const geminiService = new GeminiService(process.env.GEMINI_API_KEY);
-const codeAnalyzer = new CodeAnalyzer();
 
-router.post('/convert', async (req, res) => {
-    const { sourceLang, targetLang, inputCode } = req.body || {};
+router.post('/', async (req, res) => {
+    const { inputCode, sourceLang, targetLang } = req.body;
+    if (!inputCode || !sourceLang || !targetLang) {
+        return res.status(400).json({ error: 'Missing required fields: inputCode, sourceLang, targetLang' });
+    }
 
-    if (!sourceLang || !targetLang || !inputCode) {
-        return res.status(400).json({ message: 'sourceLang, targetLang, and inputCode are required.' });
+    if (!geminiService.isConfigured()) {
+        console.error("FATAL: Gemini API key not configured on the server.");
+        return res.status(500).json({ error: 'AI service is not configured. Please check the server setup.' });
     }
 
     try {
-        if (!geminiService.isConfigured()) {
-            return res.status(500).json({ message: 'Gemini API key not configured' });
-        }
-        
-        const outputCode = await geminiService.convertCode(sourceLang, targetLang, inputCode);
-        res.json({ result: outputCode });
-
+        const result = await geminiService.convertCode(sourceLang, targetLang, inputCode);
+        res.json(result);
     } catch (error) {
-        console.error('Error during conversion:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        console.error('Error during conversion process:', error);
+        res.status(500).json({ error: error.message || 'An unexpected error occurred during conversion.' });
     }
-});
-
-router.get('/health', (_req, res) => {
-    res.json({
-        status: 'healthy',
-        services: {
-            gemini: geminiService.isConfigured()
-        }
-    });
 });
 
 export default router;
