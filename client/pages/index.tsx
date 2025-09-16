@@ -3,6 +3,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
+import axios from 'axios';
 import { LANGUAGES, Language } from '../lib/languages';
 import { addToHistory, getItemToRerun, setItemToRerun } from '../lib/historyService';
 import { useTheme } from '../lib/themeContext';
