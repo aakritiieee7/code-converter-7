@@ -4,21 +4,15 @@ import Button from './ui/button';
 
 interface AnalysisPanelProps {
   analysis: string[];
-  qualityMetrics?: {
-    linesOfCode: number;
-    functions: number;
-    classes: number;
-    complexity: number;
-    readability: string;
-  };
   loading?: boolean;
   onCopyAnalysis?: () => void;
 }
 
-export default function AnalysisPanel({ analysis, qualityMetrics, loading, onCopyAnalysis }: AnalysisPanelProps) {
+export default function AnalysisPanel({ analysis, loading, onCopyAnalysis }: AnalysisPanelProps) {
   const categorized = React.useMemo(() => {
     const result = { errors: [] as string[], warnings: [] as string[], suggestions: [] as string[], successes: [] as string[] };
-    (analysis || []).forEach(item => {
+    if (!analysis) return result; 
+    analysis.forEach(item => {
       if (item.startsWith('❌') || /Error:/i.test(item)) result.errors.push(item);
       else if (item.startsWith('⚠️')) result.warnings.push(item);
       else if (item.startsWith('💡')) result.suggestions.push(item);
@@ -30,7 +24,7 @@ export default function AnalysisPanel({ analysis, qualityMetrics, loading, onCop
   if (loading) {
     return (
       <Card>
-        <CardHeader className="flex items-center justify-between">
+        <CardHeader>
           <CardTitle>Analysis</CardTitle>
         </CardHeader>
         <CardContent>
@@ -45,14 +39,16 @@ export default function AnalysisPanel({ analysis, qualityMetrics, loading, onCop
 
   const copyText = () => {
     const text = (analysis || []).join('\n');
-    navigator.clipboard.writeText(text);
-    onCopyAnalysis?.();
+    if (text) {
+        navigator.clipboard.writeText(text);
+        onCopyAnalysis?.();
+    }
   };
 
   return (
     <div className="space-y-4">
       <Card>
-        <CardHeader className="flex items-center justify-between">
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Analysis</CardTitle>
           <Button size="sm" variant="outline" onClick={copyText}>Copy</Button>
         </CardHeader>
@@ -90,19 +86,6 @@ export default function AnalysisPanel({ analysis, qualityMetrics, loading, onCop
                 )}
               </div>
             </div>
-
-            {qualityMetrics && (
-              <div>
-                <h4 className="text-white/80 font-medium">Quality Metrics</h4>
-                <div className="grid grid-cols-2 gap-3 text-sm mt-2">
-                  <div className="flex justify-between"><span className="text-white/70">Lines of Code</span><span>{qualityMetrics.linesOfCode}</span></div>
-                  <div className="flex justify-between"><span className="text-white/70">Functions</span><span>{qualityMetrics.functions}</span></div>
-                  <div className="flex justify-between"><span className="text-white/70">Classes</span><span>{qualityMetrics.classes}</span></div>
-                  <div className="flex justify-between"><span className="text-white/70">Complexity</span><span>{qualityMetrics.complexity}</span></div>
-                  <div className="flex justify-between"><span className="text-white/70">Readability</span><span className="px-2 py-0.5 rounded bg-white/10">{qualityMetrics.readability}</span></div>
-                </div>
-              </div>
-            )}
           </div>
         </CardContent>
       </Card>

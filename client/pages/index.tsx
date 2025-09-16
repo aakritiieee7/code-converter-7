@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 import axios from 'axios';
 import { LANGUAGES, Language } from '../lib/languages';
-import { addToHistory, getItemToRerun, setItemToRerun } from '../lib/historyService';
+import { addToHistory, getItemToRerun } from '../lib/historyService';
 import { useTheme } from '../lib/themeContext';
 
 import Button from '../components/ui/button';
@@ -53,7 +53,7 @@ export default function Home() {
         setAnalysis('');
         setFixedCode('');
         try {
-            const response = await axios.post(`${apiBase}/api/convert`, { inputCode, sourceLang, targetLang, useAI: true });
+            const response = await axios.post(`${apiBase}/api/convert`, { inputCode, sourceLang, targetLang });
             
             const analysisText = response.data.analysis || 'No analysis provided.';
             
@@ -76,7 +76,7 @@ export default function Home() {
             }
         } catch (err) {
             if (axios.isAxiosError(err) && err.response) {
-                setError(err.response.data.message || 'Server error during conversion.');
+                setError(err.response.data.error || 'Server error during conversion.');
             } else {
                 setError('Failed to connect to server. Is it running?');
             }
