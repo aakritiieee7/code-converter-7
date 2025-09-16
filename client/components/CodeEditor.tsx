@@ -66,11 +66,6 @@ export default function CodeEditor({ language, value, onChange, readOnly = false
         onMount={(editor, monaco) => {
           const currentTheme = theme === 'dark' ? 'enhanced-dark' : 'enhanced-light';
           monaco.editor.setTheme(currentTheme);
-          editor.updateOptions({
-            semanticHighlighting: {
-              enabled: true,
-            },
-          });
         }}
       />
     </div>
