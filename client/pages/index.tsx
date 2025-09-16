@@ -142,15 +142,23 @@ export default function Home() {
                 </header>
 
                 <main className="flex-grow w-full max-w-7xl mx-auto p-4 md:p-6">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="flex flex-col space-y-4">
-                            <div className="flex justify-between items-center mb-4">
-                                <label className="text-lg font-medium">Source Code</label>
-                                <Select value={sourceLang} onChange={(e) => setSourceLang(e.target.value)}>
-                                    {languages.map((lang) => <option key={lang} value={lang}>{lang}</option>)}
-                                </Select>
+                            <div className="flex items-center space-x-4">
+                                <span className="font-semibold">From:</span>
+                                <div className="flex-grow">
+                                    <Select
+                                        value={sourceLang}
+                                        onChange={(e) => setSourceLang(e.target.value as Language)}
+                                        disabled={loading}
+                                    >
+                                        {LANGUAGES.map(lang => (
+                                            <option key={lang} value={lang}>{lang}</option>
+                                        ))}
+                                    </Select>
+                                </div>
                             </div>
-                            <div className="flex-grow">
+                            <div className="h-[400px]">
                                 <CodeEditor
                                     language={sourceLang}
                                     value={inputCode}
@@ -160,21 +168,33 @@ export default function Home() {
                             </div>
                         </div>
 
-                        <div className="bg-white/80 dark:bg-brand-dark/50 p-6 rounded-2xl shadow-lg border border-black/10 dark:border-white/10 backdrop-blur-lg">
-                            <div className="flex justify-between items-center mb-4">
-                                <label className="text-lg font-medium">Converted Code</label>
-                                <Select
-                                    value={targetLang}
-                                    onChange={(e) => setTargetLang(e.target.value)}
-                                    options={LANGUAGES}
-                                    disabled={loading}
-                                />
+                        {/* Output Section */}
+                        <div className="flex flex-col space-y-4">
+                            <div className="flex items-center space-x-4">
+                                <span className="font-semibold">To:</span>
+                                <div className="flex-grow">
+                                    <Select
+                                        value={targetLang}
+                                        onChange={(e) => setTargetLang(e.target.value as Language)}
+                                        disabled={loading}
+                                    >
+                                        {LANGUAGES.map(lang => (
+                                            <option key={lang} value={lang}>{lang}</option>
+                                        ))}
+                                    </Select>
+                                </div>
                             </div>
                             <div className="h-[400px]">
                                 <CodeEditor value={outputCode} language={targetLang} readOnly />
                             </div>
                         </div>
                     </div>
+
+                    {error && (
+                        <p className="text-center text-red-500 dark:text-hot-pink mt-6 p-4 bg-red-500/10 rounded-lg border border-red-500/20">
+                            {error}
+                        </p>
+                    )}
 
                     <div className="flex flex-col space-y-4">
                         <div className="flex items-center justify-between">
@@ -218,12 +238,6 @@ export default function Home() {
                             Clear All
                         </Button>
                     </div>
-
-                    {error && (
-                        <p className="text-center text-red-500 dark:text-hot-pink mt-6 p-4 bg-red-500/10 rounded-lg border border-red-500/20">
-                            {error}
-                        </p>
-                    )}
                 </main>
             </div>
         </div>
