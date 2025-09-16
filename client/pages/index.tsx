@@ -40,7 +40,7 @@ export default function Home() {
         }
     }, []);
 
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
     async function handleConvert() {
         if (!inputCode.trim()) {
@@ -53,7 +53,8 @@ export default function Home() {
         setAnalysis('');
         setFixedCode('');
         try {
-            const response = await axios.post(`${apiBase}/convert`, { inputCode, sourceLang, targetLang, useAI: true });
+            const response = await axios.post(`${apiBase}/api/convert`, { inputCode, sourceLang, targetLang, useAI: true });
+            
             const analysisText = response.data.analysis || 'No analysis provided.';
             
             if (response.data.convertedCode) {
@@ -142,7 +143,6 @@ export default function Home() {
 
                 <main className="flex-grow w-full max-w-7xl mx-auto p-4 md:p-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Input Section */}
                         <div className="flex flex-col space-y-4">
                             <div className="flex items-center space-x-4">
                                 <span className="font-semibold">From:</span>
@@ -168,7 +168,6 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* Output Section */}
                         <div className="flex flex-col space-y-4">
                             <div className="flex items-center space-x-4">
                                 <span className="font-semibold">To:</span>
