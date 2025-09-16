@@ -6,9 +6,10 @@ import { LANGUAGES, Language } from '../lib/languages';
 import { addToHistory, setItemToRerun, getItemToRerun } from '../lib/historyService';
 import Button from '../components/ui/button';
 import Select from '../components/ui/select';
+import { useTheme } from '../lib/themeContext';
 
 const CodeEditor = dynamic(() => import('../components/CodeEditor'), {
-  ssr: false,
+  ssr: false, 
   loading: () => <div className="h-[300px] md:h-[400px] bg-brand-dark/50 rounded-lg flex items-center justify-center"><p>Loading Editor...</p></div>
 });
 
