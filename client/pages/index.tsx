@@ -163,11 +163,16 @@ export default function Home() {
                         <div className="bg-white/80 dark:bg-brand-dark/50 p-6 rounded-2xl shadow-lg border border-black/10 dark:border-white/10 backdrop-blur-lg">
                             <div className="flex justify-between items-center mb-4">
                                 <label className="text-lg font-medium">Converted Code</label>
-                                <Select value={targetLang} onChange={(e) => setTargetLang(e.target.value)}>
-                                    {languages.map((lang) => <option key={lang} value={lang}>{lang}</option>)}
-                                </Select>
+                                <Select
+                                    value={targetLang}
+                                    onChange={(e) => setTargetLang(e.target.value)}
+                                    options={LANGUAGES}
+                                    disabled={loading}
+                                />
                             </div>
-                            <CodeEditor value={outputCode} onChange={() => {}} language={targetLang} height="400px" readOnly />
+                            <div className="h-[400px]">
+                                <CodeEditor value={outputCode} language={targetLang} readOnly />
+                            </div>
                         </div>
                     </div>
 
