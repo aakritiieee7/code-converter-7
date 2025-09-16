@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import dynamic from 'next/dynamic'; 
 import { LANGUAGES, Language } from '../lib/languages';
-import { saveHistory, setItemToRerun } from '../lib/historyService';
+import { addToHistory, setItemToRerun, getItemToRerun } from '../lib/historyService';
 import Button from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 
