@@ -7,23 +7,22 @@ import axios from 'axios';
 import { LANGUAGES, Language } from '../lib/languages';
 import { addToHistory, getItemToRerun, setItemToRerun } from '../lib/historyService';
 import { useTheme } from '../lib/themeContext';
+
 import Button from '../components/ui/button';
 import Select from '../components/ui/select';
 import AnalysisPanel from '../components/AnalysisPanel';
 
-const CodeEditor = dynamic(() => import('../components/CodeEditor'), {
+const CodeEditor = dynamic(() => import('..u components/CodeEditor'), {
   ssr: false,
   loading: () => <div className="h-[300px] md:h-[400px] bg-brand-dark/50 rounded-lg flex items-center justify-center"><p>Loading Editor...</p></div>
 });
-
-const languages = ['Python', 'Java', 'JavaScript', 'C#'];
 
 export default function Home() {
     const { theme, toggleTheme } = useTheme();
     const [inputCode, setInputCode] = useState('');
     const [outputCode, setOutputCode] = useState('');
-    const [sourceLang, setSourceLang] = useState('Python');
-    const [targetLang, setTargetLang] = useState('Java');
+    const [sourceLang, setSourceLang] = useState<Language>('Python');
+    const [targetLang, setTargetLang] = useState<Language>('Java');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [analysis, setAnalysis] = useState('');
@@ -34,8 +33,8 @@ export default function Home() {
         const itemToRerun = getItemToRerun();
         if (itemToRerun) {
             setInputCode(itemToRerun.inputCode);
-            setSourceLang(itemToRerun.sourceLang);
-            setTargetLang(itemToRerun.targetLang);
+            setSourceLang(itemToRerun.sourceLang as Language);
+            setTargetLang(itemToRerun.targetLang as Language);
             setOutputCode(''); 
             setAnalysis('Code loaded from history. Ready to convert.');
         }
@@ -143,6 +142,7 @@ export default function Home() {
 
                 <main className="flex-grow w-full max-w-7xl mx-auto p-4 md:p-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Input Section */}
                         <div className="flex flex-col space-y-4">
                             <div className="flex items-center space-x-4">
                                 <span className="font-semibold">From:</span>
@@ -185,7 +185,12 @@ export default function Home() {
                                 </div>
                             </div>
                             <div className="h-[400px]">
-                                <CodeEditor value={outputCode} language={targetLang} readOnly />
+                                <CodeEditor 
+                                    value={outputCode} 
+                                    language={targetLang} 
+                                    readOnly 
+                                    onChange={setOutputCode} 
+                                />
                             </div>
                         </div>
                     </div>
@@ -196,21 +201,10 @@ export default function Home() {
                         </p>
                     )}
 
-                    <div className="flex flex-col space-y-4">
-                        <div className="flex items-center justify-between">
-                            <h3 className="font-semibold">Output Code ({targetLang})</h3>
-                            <Button onClick={() => handleCopy(outputCode)} variant="ghost" size="sm">Copy</Button>
-                        </div>
-                        <div className="flex-grow">
-                            <CodeEditor
-                                language={targetLang}
-                                value={outputCode}
-                                readOnly
-                            />
-                        </div>
-                        {analysis && (
+                    <div className="flex flex-col space-y-4 mt-6">
+                        {(analysis || loading) && (
                             <AnalysisPanel
-                                analysis={analysis.split('\n')}
+                                analysis={analysis ? analysis.split('\n') : []}
                                 loading={loading}
                                 onCopyAnalysis={() => handleCopy(analysis)}
                             />
