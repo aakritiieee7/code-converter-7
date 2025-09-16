@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import { LANGUAGES, Language } from '../lib/languages';
 import { addToHistory, setItemToRerun, getItemToRerun } from '../lib/historyService';
 import Button from '../components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import Select from '../components/ui/select';
 
 const CodeEditor = dynamic(() => import('../components/CodeEditor'), {
   ssr: false,
