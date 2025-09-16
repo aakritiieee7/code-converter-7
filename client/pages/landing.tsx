@@ -37,9 +37,7 @@ export default function LandingPage() {
             </div>
             <div className="flex items-center space-x-2">
               <Link href="/" asChild>
-                <Button variant="secondary" size="sm">
-                  Converter
-                </Button>
+                <Button variant="secondary" size="sm">Converter</Button>
               </Link>
             </div>
           </div>
@@ -56,9 +54,7 @@ export default function LandingPage() {
               </p>
               <div className="flex gap-4 justify-center">
                 <Link href="/" asChild>
-                    <Button size="lg">
-                        Start Converting →
-                    </Button>
+                    <Button size="lg">Start Converting →</Button>
                 </Link>
               </div>
             </div>
