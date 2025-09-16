@@ -127,14 +127,10 @@ export default function Home() {
                         </div>
                         <div className="flex items-center space-x-2">
                             <Link href="/history" passHref>
-                                <Button as="a" variant="secondary" size="sm">
-                                    History
-                                </Button>
+                                <a><Button variant="secondary" size="sm">History</Button></a>
                             </Link>
                             <Link href="/landing" passHref>
-                                <Button as="a" variant="secondary" size="sm">
-                                    About
-                                </Button>
+                                <a><Button variant="secondary" size="sm">About</Button></a>
                             </Link>
                             <Button onClick={toggleTheme} variant="ghost" size="icon">
                                 {theme === 'dark' ? '☀️' : '🌙'}
@@ -182,7 +178,6 @@ export default function Home() {
                             <CodeEditor
                                 language={targetLang}
                                 value={outputCode}
-                                onChange={(value: string | undefined) => {}}
                                 readOnly
                             />
                         </div>
@@ -199,7 +194,6 @@ export default function Home() {
                                 <CodeEditor
                                     language={sourceLang}
                                     value={fixedCode}
-                                    onChange={(value: string | undefined) => {}}
                                     readOnly
                                 />
                                 <div className="flex gap-4 mt-4">
