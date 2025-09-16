@@ -7,7 +7,6 @@ import axios from 'axios';
 import { LANGUAGES, Language } from '../lib/languages';
 import { addToHistory, getItemToRerun } from '../lib/historyService';
 import { useTheme } from '../lib/themeContext';
-
 import Button from '../components/ui/button';
 import Select from '../components/ui/select';
 import AnalysisPanel from '../components/AnalysisPanel';
@@ -119,7 +118,6 @@ export default function Home() {
                         <div className="absolute bottom-[10%] right-[10%] w-72 h-72 bg-gradient-to-r from-baby-pink to-hot-pink rounded-full opacity-10 filter blur-3xl animate-blob-float animation-delay-4000" />
                     </div>
                 )}
-
                 <header className="sticky top-0 z-50 bg-white/50 dark:bg-brand-dark/50 backdrop-blur-md border-b border-black/10 dark:border-white/10">
                     <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
                         <div className="flex items-center space-x-3 font-bold text-2xl">
@@ -167,7 +165,6 @@ export default function Home() {
                                 />
                             </div>
                         </div>
-
                         <div className="flex flex-col space-y-4">
                             <div className="flex items-center space-x-4">
                                 <span className="font-semibold">To:</span>
@@ -188,7 +185,7 @@ export default function Home() {
                                     value={outputCode} 
                                     language={targetLang} 
                                     readOnly 
-                                    onChange={setOutputCode} 
+                                    onChange={setOutputCode}
                                 />
                             </div>
                         </div>

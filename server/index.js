@@ -6,6 +6,7 @@ import convertRouter from './routes/convert.js';
 dotenv.config();
 
 const app = express();
+const port = process.env.PORT || 5001;
 
 const corsOptions = {
   origin: true,
@@ -15,14 +16,12 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '1mb' }));
 
-app.use('/api/convert', convertRouter);
+app.use('/api', convertRouter);
 
 app.get('/', (req, res) => {
   res.send('Code Converter AI Server is running!');
 });
 
-const PORT = process.env.PORT || 5001;
-
-app.listen(PORT, () => {
-    console.log(`Server is running successfully on http://localhost:${PORT}`);
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
