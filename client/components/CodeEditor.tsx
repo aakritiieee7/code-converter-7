@@ -1,12 +1,11 @@
-import React, { useEffect } from 'react';
-import { Editor } from '@monaco-editor/react';
-import { useTheme } from '../lib/themeContext'; 
+import React from 'react';
+import Editor, { Monaco } from '@monaco-editor/react';
+import { useTheme } from '../lib/themeContext';
+
 interface CodeEditorProps {
-  value: string;
-  onChange: (value: string) => void;
   language: string;
-  height: string;
-  className?: string;
+  value: string;
+  onChange?: (value: string) => void;
   readOnly?: boolean;
 }
 
@@ -19,7 +18,11 @@ export default function CodeEditor({ language, value, onChange, readOnly = false
         height="100%"
         language={language.toLowerCase()}
         value={value}
-        onChange={onChange}
+        onChange={(val) => {
+          if (onChange) {
+            onChange(val || '');
+          }
+        }}
         theme={theme === 'dark' ? 'vs-dark' : 'vs-light'}
         options={{
           readOnly: readOnly,
@@ -63,7 +66,6 @@ export default function CodeEditor({ language, value, onChange, readOnly = false
         onMount={(editor, monaco) => {
           const currentTheme = theme === 'dark' ? 'enhanced-dark' : 'enhanced-light';
           monaco.editor.setTheme(currentTheme);
-
           editor.updateOptions({
             semanticHighlighting: {
               enabled: true,

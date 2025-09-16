@@ -156,7 +156,7 @@ export default function Home() {
                                 <CodeEditor
                                     language={sourceLang}
                                     value={inputCode}
-                                    onChange={(value) => setInputCode(value || '')}
+                                    onChange={setInputCode}
                                     readOnly={loading}
                                 />
                             </div>
@@ -173,7 +173,6 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Output/Analysis Section */}
                     <div className="flex flex-col space-y-4">
                         <div className="flex items-center justify-between">
                             <h3 className="font-semibold">Output Code ({targetLang})</h3>
