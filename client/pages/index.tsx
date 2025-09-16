@@ -12,7 +12,7 @@ import Button from '../components/ui/button';
 import Select from '../components/ui/select';
 import AnalysisPanel from '../components/AnalysisPanel';
 
-const CodeEditor = dynamic(() => import('..u components/CodeEditor'), {
+const CodeEditor = dynamic(() => import('../components/CodeEditor'), {
   ssr: false,
   loading: () => <div className="h-[300px] md:h-[400px] bg-brand-dark/50 rounded-lg flex items-center justify-center"><p>Loading Editor...</p></div>
 });
