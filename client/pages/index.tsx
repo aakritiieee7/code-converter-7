@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import dynamic from 'next/dynamic'; 
+import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
 import { LANGUAGES, Language } from '../lib/languages';
-import { addToHistory, setItemToRerun, getItemToRerun } from '../lib/historyService';
+import { addToHistory, getItemToRerun, setItemToRerun } from '../lib/historyService';
+import { useTheme } from '../lib/themeContext';
 import Button from '../components/ui/button';
 import Select from '../components/ui/select';
-import { useTheme } from '../lib/themeContext';
+import AnalysisPanel from '../components/AnalysisPanel';
 
 const CodeEditor = dynamic(() => import('../components/CodeEditor'), {
-  ssr: false, 
+  ssr: false,
   loading: () => <div className="h-[300px] md:h-[400px] bg-brand-dark/50 rounded-lg flex items-center justify-center"><p>Loading Editor...</p></div>
 });
-
-import AnalysisPanel from '../components/AnalysisPanel';
 
 const languages = ['Python', 'Java', 'JavaScript', 'C#'];
 
