@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import { useTheme } from '../lib/themeContext';
 import Button from '../components/ui/button';
-import Link from 'next/link'; // Add this import
+import Link from 'next/link';
 
 const FeatureCard = ({ icon, title, description }: { icon: string; title:string; description: string }) => (
   <div className="bg-white/10 dark:bg-brand-dark/50 p-6 rounded-2xl shadow-lg border border-white/10 backdrop-blur-lg hover:scale-105 hover:-rotate-1 transition-transform duration-300">
@@ -33,11 +33,11 @@ export default function LandingPage() {
               <span className="text-3xl">💻</span>
               <span className="bg-gradient-to-r from-baby-pink to-hot-pink bg-clip-text text-transparent">
                 DevTranslate
-              </span>
+              </span> 
             </div>
             <div className="flex items-center space-x-2">
-              <Link href="/" passHref>
-                <Button as="a" variant="secondary" size="sm">
+              <Link href="/" asChild>
+                <Button variant="secondary" size="sm">
                   Converter
                 </Button>
               </Link>
@@ -55,8 +55,8 @@ export default function LandingPage() {
                 Use the power of AI to convert, fix, and understand code across different programming languages.
               </p>
               <div className="flex gap-4 justify-center">
-                <Link href="/" passHref>
-                    <Button as="a" size="lg">
+                <Link href="/" asChild>
+                    <Button size="lg">
                         Start Converting →
                     </Button>
                 </Link>
