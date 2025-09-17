@@ -3,16 +3,17 @@ import { GeminiService } from '../lib/geminiService.js';
 
 const router = express.Router();
 
-console.log('Convert router loaded');
+console.log('=== CONVERT ROUTER LOADING ===');
 console.log('GEMINI_API_KEY exists:', !!process.env.GEMINI_API_KEY);
 console.log('GEMINI_API_KEY length:', process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.length : 0);
 
 const geminiService = new GeminiService(process.env.GEMINI_API_KEY);
 
-// TEST ROUTE - Remove this after testing
+// TEST ROUTE - Debug endpoint
 router.get('/test', (req, res) => {
+    console.log('=== TEST ROUTE HIT ===');
     res.json({
-        message: 'Test endpoint working',
+        message: 'Test endpoint working - v2',
         hasApiKey: !!process.env.GEMINI_API_KEY,
         apiKeyLength: process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.length : 0,
         geminiConfigured: geminiService.isConfigured(),
@@ -21,7 +22,7 @@ router.get('/test', (req, res) => {
 });
 
 router.post('/convert', async (req, res) => {
-    console.log('POST /api/convert endpoint hit');
+    console.log('=== CONVERT ENDPOINT HIT ===');
     console.log('Request body:', req.body);
     
     const { inputCode, sourceLang, targetLang } = req.body;
@@ -47,5 +48,7 @@ router.post('/convert', async (req, res) => {
         res.status(500).json({ error: error.message || 'An unexpected error occurred during conversion.' });
     }
 });
+
+console.log('=== CONVERT ROUTER SETUP COMPLETE ===');
 
 export default router;
