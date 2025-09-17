@@ -5,7 +5,7 @@ const router = express.Router();
 
 const geminiService = new GeminiService(process.env.GEMINI_API_KEY);
 
-router.post('/', async (req, res) => {
+router.post('/convert', async (req, res) => {
     const { inputCode, sourceLang, targetLang } = req.body;
     if (!inputCode || !sourceLang || !targetLang) {
         return res.status(400).json({ error: 'Missing required fields: inputCode, sourceLang, targetLang' });
