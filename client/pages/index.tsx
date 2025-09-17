@@ -37,10 +37,10 @@ export default function Home() {
         }
     }, []);
 
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+    const apiBase = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001').replace(/\/$/, '');
 
     const handleConvert = async () => {
-        console.log('Convert button clicked!'); // Debug log
+        console.log('Convert button clicked!');
         
         if (!inputCode.trim()) {
             setError('Please enter some code to convert');
@@ -53,8 +53,10 @@ export default function Home() {
         setAnalysis('');
         
         try {
-            console.log('Making API call to:', `${apiBase}/api/convert`);
-            const response = await axios.post(`${apiBase}/api/convert`, {
+            const apiUrl = `${apiBase}/api/convert`;
+            console.log('Making API call to:', apiUrl);
+            
+            const response = await axios.post(apiUrl, {
                 inputCode,
                 sourceLang,
                 targetLang
@@ -108,7 +110,7 @@ export default function Home() {
     };
 
     const handleClearAll = () => {
-        console.log('Clear All button clicked!'); // Debug log
+        console.log('Clear All button clicked!');
         setInputCode('');
         setOutputCode('');
         setAnalysis('');
