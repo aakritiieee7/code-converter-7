@@ -1,7 +1,7 @@
 # DevTranslate: AI-Powered Code Converter
 
-DevTranslate is a modern, full-stack web application designed to instantly convert, fix, and understand code across multiple programming languages. Powered by a securely implemented Google Gemini model, it provides a seamless and intelligent experience for developers, focusing on accuracy and security.
-
+DevTranslate is a modern, full-stack web application designed to instantly convert, fix, and understand code across multiple programming languages. 
+Available [here](https://code-converter-0hs3.onrender.com/).
 ## 📸 Application Preview
 
 ### Landing Page
