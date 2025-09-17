@@ -3,11 +3,17 @@ import { GeminiService } from '../lib/geminiService.js';
 
 const router = express.Router();
 
+console.log('GEMINI_API_KEY exists:', !!process.env.GEMINI_API_KEY);
+console.log('GEMINI_API_KEY length:', process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.length : 0);
+
 const geminiService = new GeminiService(process.env.GEMINI_API_KEY);
 
 router.post('/convert', async (req, res) => {
+    console.log('Convert endpoint hit with body:', req.body);
+    
     const { inputCode, sourceLang, targetLang } = req.body;
     if (!inputCode || !sourceLang || !targetLang) {
+        console.log('Missing required fields');
         return res.status(400).json({ error: 'Missing required fields: inputCode, sourceLang, targetLang' });
     }
 
@@ -17,10 +23,13 @@ router.post('/convert', async (req, res) => {
     }
 
     try {
+        console.log('Calling geminiService.convertCode...');
         const result = await geminiService.convertCode(sourceLang, targetLang, inputCode);
+        console.log('GeminiService result:', result);
         res.json(result);
     } catch (error) {
         console.error('Error during conversion process:', error);
+        console.error('Error stack:', error.stack);
         res.status(500).json({ error: error.message || 'An unexpected error occurred during conversion.' });
     }
 });

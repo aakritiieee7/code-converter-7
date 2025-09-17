@@ -2,6 +2,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export class GeminiService {
   constructor(apiKey) {
+    console.log('GeminiService constructor called with apiKey:', !!apiKey);
     this.genAI = null;
     this.model = null;
     this.apiKey = apiKey;
@@ -10,18 +11,32 @@ export class GeminiService {
 
   initializeClient() {
     if (this.apiKey) {
-      this.genAI = new GoogleGenerativeAI(this.apiKey);
-      this.model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      console.log('Initializing Gemini client...');
+      try {
+        this.genAI = new GoogleGenerativeAI(this.apiKey);
+        this.model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        console.log('Gemini client initialized successfully');
+      } catch (error) {
+        console.error('Failed to initialize Gemini client:', error);
+        this.model = null;
+      }
+    } else {
+      console.error('No API key provided to GeminiService');
     }
   }
 
   isConfigured() {
-    return !!this.apiKey;
+    const configured = !!this.apiKey && !!this.model;
+    console.log('GeminiService isConfigured - apiKey exists:', !!this.apiKey, 'model exists:', !!this.model);
+    return configured;
   }
 
   async convertCode(sourceLang, targetLang, inputCode) {
     try {
+        console.log('convertCode called with:', { sourceLang, targetLang, inputCodeLength: inputCode.length });
+        
         if (!this.model) {
+            console.error('Model not initialized in convertCode');
             throw new Error("Gemini model not initialized.");
         }
 
@@ -88,8 +103,12 @@ ${inputCode}
 \`\`\`
         `;
 
+        console.log('About to call generateContent...');
         const result = await this.model.generateContent(prompt);
+        console.log('generateContent completed');
+        
         const response = await result.response;
+        console.log('Response received from Gemini');
 
         const candidate = response.candidates?.[0];
         if (!candidate || candidate.finishReason === 'SAFETY') {
@@ -98,6 +117,7 @@ ${inputCode}
         }
 
         let processed = response.text().trim();
+        console.log('Raw response text:', processed.substring(0, 200) + '...');
 
         if (processed.startsWith("```json")) {
             processed = processed.replace(/^```json\n/, '').replace(/```$/, '').trim();
@@ -108,6 +128,7 @@ ${inputCode}
         let parsed;
         try {
             parsed = JSON.parse(processed);
+            console.log('Successfully parsed JSON response');
 
             const hasConvertedCode = parsed.convertedCode && typeof parsed.convertedCode === 'string';
             const hasFixedCode = parsed.fixedCode && typeof parsed.fixedCode === 'string';
