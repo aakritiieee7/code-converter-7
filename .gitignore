@@ -22,4 +22,4 @@ dist-ssr
 .env.*
 *.env
 *.env.*
-.next/
+.next

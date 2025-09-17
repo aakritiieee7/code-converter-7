@@ -24,18 +24,19 @@ export default function HistoryPage() {
     setLoading(false);
   }, []);
 
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
+  };
+
   const handleRerun = (item: HistoryItem) => {
     setItemToRerun(item);
     router.push('/');
   };
 
-  const selectedItem = items.find(item => item.id === selectedItemId);
-
   return (
-    <div className={`flex flex-col min-h-screen font-sans transition-colors duration-300 ${theme === 'dark' ? 'bg-brand-dark text-white' : 'bg-gray-50 text-black'}`}>
+    <div className={`min-h-screen w-full transition-colors duration-300 ${theme === 'dark' ? 'bg-brand-dark text-white' : 'bg-gray-50 text-black'}`}>
       <Head>
-        <title>Conversion History - DevTranslate</title>
-        <meta name="description" content="Review your past code conversions." />
+        <title>History - DevTranslate</title>
       </Head>
 
       <header className="sticky top-0 z-50 bg-brand-dark/50 backdrop-blur-md border-b border-white/10">
@@ -57,7 +58,7 @@ export default function HistoryPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto p-6 w-full">
+      <main className="max-w-7xl mx-auto p-6">
         {loading ? (
           <p>Loading history...</p>
         ) : items.length === 0 ? (
@@ -68,47 +69,45 @@ export default function HistoryPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-1">
-              <ul className="space-y-2">
-                {items.map((item) => (
-                  <li key={item.id}>
-                    <button
-                      onClick={() => setSelectedItemId(item.id)}
-                      className={`w-full text-left p-3 rounded-lg transition-colors ${selectedItemId === item.id ? 'bg-deep-purple/80' : 'bg-brand-dark/50 hover:bg-brand-dark'}`}
-                    >
-                      <div className="font-semibold">{item.sourceLang} to {item.targetLang}</div>
-                      <div className="text-xs text-gray-400">{new Date(item.timestamp).toLocaleString()}</div>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="md:col-span-2">
-              {selectedItem ? (
-                <div className="bg-brand-dark/50 p-4 rounded-lg space-y-4">
-                  <div>
-                    <h3 className="font-semibold mb-2">Input Code ({selectedItem.sourceLang})</h3>
-                    <CodeEditor language={selectedItem.sourceLang} value={selectedItem.inputCode} readOnly />
+          <div className="space-y-4">
+            {items.map((item) => (
+              <div key={item.id} className="bg-white/5 rounded-lg border border-white/10">
+                <div className="p-4 flex justify-between items-center cursor-pointer" onClick={() => setSelectedItemId(selectedItemId === item.id ? null : item.id)}>
+                  <div className="flex items-center gap-4">
+                    <span className="font-mono text-xs text-gray-400">{new Date(item.timestamp).toLocaleString()}</span>
+                    <span className="text-sm font-semibold">{item.sourceLang} → {item.targetLang}</span>
+                    {item.type === 'fix' && <span className="text-xs bg-orange-500/20 text-orange-400 px-2 py-1 rounded-full">Fix</span>}
                   </div>
-                  <div>
-                    <h3 className="font-semibold mb-2">Output Code ({selectedItem.targetLang})</h3>
-                    <CodeEditor language={selectedItem.targetLang} value={selectedItem.outputCode} readOnly />
-                  </div>
-                  {selectedItem.analysis && (
-                    <div>
-                      <h3 className="font-semibold mb-2">AI Analysis</h3>
-                      <div className="text-sm whitespace-pre-wrap p-3 bg-black/30 rounded-lg">{selectedItem.analysis}</div>
+                  <Button variant="ghost" size="sm">{selectedItemId === item.id ? 'Hide' : 'View'}</Button>
+                </div>
+
+                {selectedItemId === item.id && (
+                  <div className="p-4 border-t border-white/10">
+                    <div className="grid md:grid-cols-2 gap-6 mb-4">
+                      <div>
+                        <h4 className="font-semibold mb-2">Input</h4>
+                        <div className="h-[250px]">
+                          <CodeEditor value={item.inputCode} onChange={() => {}} language={item.sourceLang} readOnly />
+                        </div>
+                        <Button onClick={() => handleCopy(item.inputCode)} variant="outline" size="sm" className="mt-2 w-full">Copy Input</Button>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold mb-2">{item.type === 'fix' ? 'Fixed Code' : 'Output'}</h4>
+                        <div className="h-[250px]">
+                          <CodeEditor value={item.outputCode} onChange={() => {}} language={item.targetLang || item.sourceLang} readOnly />
+                        </div>
+                        <Button onClick={() => handleCopy(item.outputCode)} variant="outline" size="sm" className="mt-2 w-full">Copy Output</Button>
+                      </div>
                     </div>
-                  )}
-                  <Button onClick={() => handleRerun(selectedItem)}>Rerun this Conversion</Button>
-                </div>
-              ) : (
-                <div className="flex items-center justify-center h-full bg-brand-dark/50 rounded-lg">
-                  <p className="text-gray-400">Select an item to view details</p>
-                </div>
-              )}
-            </div>
+                    <div className="mb-4">
+                      <h4 className="font-semibold mb-2">Analysis</h4>
+                      <p className="text-sm text-gray-300 bg-black/20 p-3 rounded">{item.analysis}</p>
+                    </div>
+                    <Button onClick={() => handleRerun(item)} size="sm">Re-run this Conversion</Button>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         )}
       </main>

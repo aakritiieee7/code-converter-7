@@ -9,7 +9,6 @@ import { addToHistory, getItemToRerun } from '../lib/historyService';
 import { useTheme } from '../lib/themeContext';
 import Button from '../components/ui/button';
 import Select from '../components/ui/select';
-import AnalysisPanel from '../components/AnalysisPanel';
 
 const CodeEditor = dynamic(() => import('../components/CodeEditor'), {
   ssr: false,
@@ -25,7 +24,6 @@ export default function Home() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [analysis, setAnalysis] = useState('');
-    const [fixedCode, setFixedCode] = useState('');
     const router = useRouter();
 
     useEffect(() => {
@@ -34,74 +32,63 @@ export default function Home() {
             setInputCode(itemToRerun.inputCode);
             setSourceLang(itemToRerun.sourceLang as Language);
             setTargetLang(itemToRerun.targetLang as Language);
-            setOutputCode(''); 
-            setAnalysis('Code loaded from history. Ready to convert.');
+            setOutputCode('');
+            setAnalysis('');
         }
     }, []);
 
     const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
-    async function handleConvert() {
+    const handleConvert = async () => {
         if (!inputCode.trim()) {
             setError('Please enter some code to convert');
             return;
         }
+        
         setLoading(true);
         setError('');
         setOutputCode('');
         setAnalysis('');
-        setFixedCode('');
+        
         try {
-            const response = await axios.post(`${apiBase}/api/convert`, { inputCode, sourceLang, targetLang });
-            
-            const analysisText = response.data.analysis || 'No analysis provided.';
+            const response = await axios.post(`${apiBase}/api/convert`, {
+                inputCode,
+                sourceLang,
+                targetLang
+            });
             
             if (response.data.convertedCode) {
-                const converted = response.data.convertedCode;
-                setOutputCode(converted);
-                setAnalysis(analysisText);
+                setOutputCode(response.data.convertedCode);
+                setAnalysis(response.data.analysis || 'Conversion completed successfully.');
+                
                 addToHistory({
-                    sourceLang, targetLang, inputCode, outputCode: converted, analysis: analysisText, type: 'convert'
+                    sourceLang,
+                    targetLang,
+                    inputCode,
+                    outputCode: response.data.convertedCode,
+                    analysis: response.data.analysis || 'Conversion completed successfully.',
+                    type: 'convert'
                 });
-            } else if (response.data.fixedCode) {
-                const fixed = response.data.fixedCode;
-                setFixedCode(fixed);
-                setAnalysis(analysisText);
-                addToHistory({
-                    sourceLang, targetLang, inputCode, outputCode: fixed, analysis: analysisText, type: 'fix'
-                });
-            } else {
-                setError('Unexpected response format from server.');
             }
         } catch (err) {
-            if (axios.isAxiosError(err) && err.response) {
-                setError(err.response.data.error || 'Server error during conversion.');
-            } else {
-                setError('Failed to connect to server. Is it running?');
-            }
+            console.error('Conversion error:', err);
+            setError('Failed to convert code. Please try again.');
         } finally {
             setLoading(false);
         }
-    }
-
-    const handleReplaceFixed = () => {
-        setInputCode(fixedCode);
-        setFixedCode('');
-        setAnalysis('Fixed code applied. Press Convert to get target code.');
     };
 
     const handleClearAll = () => {
         setInputCode('');
         setOutputCode('');
-        setFixedCode('');
         setAnalysis('');
         setError('');
     };
 
     const handleCopy = (text: string) => {
-        if (!text) return;
-        navigator.clipboard.writeText(text);
-        alert('Copied to clipboard!');
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Copied to clipboard!');
+        });
     };
 
     return (
@@ -118,6 +105,7 @@ export default function Home() {
                         <div className="absolute bottom-[10%] right-[10%] w-72 h-72 bg-gradient-to-r from-baby-pink to-hot-pink rounded-full opacity-10 filter blur-3xl animate-blob-float animation-delay-4000" />
                     </div>
                 )}
+                
                 <header className="sticky top-0 z-50 bg-white/50 dark:bg-brand-dark/50 backdrop-blur-md border-b border-black/10 dark:border-white/10">
                     <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
                         <div className="flex items-center space-x-3 font-bold text-2xl">
@@ -165,6 +153,7 @@ export default function Home() {
                                 />
                             </div>
                         </div>
+                        
                         <div className="flex flex-col space-y-4">
                             <div className="flex items-center space-x-4">
                                 <span className="font-semibold">To:</span>
@@ -184,8 +173,8 @@ export default function Home() {
                                 <CodeEditor 
                                     value={outputCode} 
                                     language={targetLang} 
+                                    onChange={() => {}}
                                     readOnly 
-                                    onChange={setOutputCode}
                                 />
                             </div>
                         </div>
@@ -197,28 +186,15 @@ export default function Home() {
                         </p>
                     )}
 
-                    <div className="flex flex-col space-y-4 mt-6">
-                        {(analysis || loading) && (
-                            <AnalysisPanel
-                                analysis={analysis ? analysis.split('\n') : []}
-                                loading={loading}
-                                onCopyAnalysis={() => handleCopy(analysis)}
-                            />
-                        )}
-                        {fixedCode && (
-                            <div className="bg-brand-dark/50 p-4 rounded-lg">
-                                <h3 className="font-semibold mb-2">Suggested Fix</h3>
-                                <CodeEditor
-                                    language={sourceLang}
-                                    value={fixedCode}
-                                    readOnly
-                                />
-                                <div className="flex gap-4 mt-4">
-                                    <Button onClick={handleReplaceFixed} variant="secondary">Use This Fix</Button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+                    {analysis && (
+                        <div className="mt-6 p-4 bg-brand-dark/50 rounded-lg">
+                            <h3 className="font-semibold mb-2">Analysis</h3>
+                            <p className="text-sm whitespace-pre-wrap">{analysis}</p>
+                            <Button onClick={() => handleCopy(analysis)} variant="outline" size="sm" className="mt-2">
+                                Copy Analysis
+                            </Button>
+                        </div>
+                    )}
 
                     <div className="mt-8 flex justify-center gap-6">
                         <Button onClick={handleConvert} disabled={loading} size="lg">
