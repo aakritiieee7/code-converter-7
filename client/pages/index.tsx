@@ -57,6 +57,8 @@ export default function Home() {
                 targetLang
             });
             
+            console.log('API Response:', response.data);
+            
             if (response.data.convertedCode) {
                 setOutputCode(response.data.convertedCode);
                 setAnalysis(response.data.analysis || 'Conversion completed successfully.');
@@ -69,10 +71,34 @@ export default function Home() {
                     analysis: response.data.analysis || 'Conversion completed successfully.',
                     type: 'convert'
                 });
+            } else if (response.data.fixedCode) {
+                setOutputCode(response.data.fixedCode);
+                setAnalysis(response.data.analysis || 'Code was fixed.');
+                
+                addToHistory({
+                    sourceLang,
+                    targetLang,
+                    inputCode,
+                    outputCode: response.data.fixedCode,
+                    analysis: response.data.analysis || 'Code was fixed.',
+                    type: 'fix'
+                });
+            } else {
+                setError('No converted code received from server.');
             }
         } catch (err) {
             console.error('Conversion error:', err);
-            setError('Failed to convert code. Please try again.');
+            if (axios.isAxiosError(err)) {
+                if (err.response) {
+                    setError(`Server error: ${err.response.data?.error || err.response.statusText}`);
+                } else if (err.request) {
+                    setError('Cannot connect to server. Please check if the server is running.');
+                } else {
+                    setError('Request failed. Please try again.');
+                }
+            } else {
+                setError('An unexpected error occurred.');
+            }
         } finally {
             setLoading(false);
         }
@@ -173,7 +199,7 @@ export default function Home() {
                                 <CodeEditor 
                                     value={outputCode} 
                                     language={targetLang} 
-                                    onChange={() => {}}
+                                    onChange={setOutputCode}
                                     readOnly 
                                 />
                             </div>
