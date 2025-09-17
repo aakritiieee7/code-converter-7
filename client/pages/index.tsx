@@ -40,6 +40,8 @@ export default function Home() {
     const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
     const handleConvert = async () => {
+        console.log('Convert button clicked!'); // Debug log
+        
         if (!inputCode.trim()) {
             setError('Please enter some code to convert');
             return;
@@ -51,6 +53,7 @@ export default function Home() {
         setAnalysis('');
         
         try {
+            console.log('Making API call to:', `${apiBase}/api/convert`);
             const response = await axios.post(`${apiBase}/api/convert`, {
                 inputCode,
                 sourceLang,
@@ -105,6 +108,7 @@ export default function Home() {
     };
 
     const handleClearAll = () => {
+        console.log('Clear All button clicked!'); // Debug log
         setInputCode('');
         setOutputCode('');
         setAnalysis('');
@@ -153,7 +157,7 @@ export default function Home() {
                     </div>
                 </header>
 
-                <main className="flex-grow w-full max-w-7xl mx-auto p-4 md:p-6">
+                <main className="flex-grow w-full max-w-7xl mx-auto p-4 md:p-6 relative z-10">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="flex flex-col space-y-4">
                             <div className="flex items-center space-x-4">
@@ -207,9 +211,9 @@ export default function Home() {
                     </div>
 
                     {error && (
-                        <p className="text-center text-red-500 dark:text-hot-pink mt-6 p-4 bg-red-500/10 rounded-lg border border-red-500/20">
+                        <div className="text-center text-red-500 dark:text-hot-pink mt-6 p-4 bg-red-500/10 rounded-lg border border-red-500/20">
                             {error}
-                        </p>
+                        </div>
                     )}
 
                     {analysis && (
@@ -222,13 +226,20 @@ export default function Home() {
                         </div>
                     )}
 
-                    <div className="mt-8 flex justify-center gap-6">
-                        <Button onClick={handleConvert} disabled={loading} size="lg">
+                    <div className="mt-8 flex justify-center gap-6 relative z-20">
+                        <button
+                            onClick={handleConvert}
+                            disabled={loading}
+                            className="px-8 py-3 bg-gradient-to-r from-deep-purple to-hot-pink text-white font-medium rounded-lg hover:shadow-lg hover:shadow-hot-pink/30 hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
                             {loading ? 'Converting...' : 'Convert Code'}
-                        </Button>
-                        <Button onClick={handleClearAll} variant="secondary" size="lg">
+                        </button>
+                        <button
+                            onClick={handleClearAll}
+                            className="px-8 py-3 bg-gray-100 text-gray-800 hover:bg-gray-200 border border-gray-200 dark:bg-white/10 dark:text-white dark:hover:bg-white/20 dark:border-transparent font-medium rounded-lg transition-all duration-300"
+                        >
                             Clear All
-                        </Button>
+                        </button>
                     </div>
                 </main>
             </div>
