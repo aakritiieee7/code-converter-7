@@ -150,10 +150,10 @@ export default function Home() {
                             </span>
                         </div>
                         <div className="flex items-center space-x-2">
-                            <Link href="/history" passHref>
+                            <Link href="/history" legacyBehavior>
                                 <a><Button variant="secondary" size="sm">History</Button></a>
                             </Link>
-                            <Link href="/landing" passHref>
+                            <Link href="/landing" legacyBehavior>
                                 <a><Button variant="secondary" size="sm">About</Button></a>
                             </Link>
                             <Button onClick={toggleTheme} variant="ghost" size="icon">
@@ -172,7 +172,9 @@ export default function Home() {
                                     {LANGUAGES.map((lang) => <option key={lang} value={lang}>{lang}</option>)}
                                 </Select>
                             </div>
-                            <CodeEditor value={inputCode} onChange={setInputCode} language={sourceLang} />
+                            <div className="h-[400px]">
+                                <CodeEditor value={inputCode} onChange={setInputCode} language={sourceLang} />
+                            </div>
                         </div>
 
                         <div className="bg-white/80 dark:bg-brand-dark/50 p-6 rounded-2xl shadow-lg border border-black/10 dark:border-white/10 backdrop-blur-lg">
@@ -182,7 +184,9 @@ export default function Home() {
                                     {LANGUAGES.map((lang) => <option key={lang} value={lang}>{lang}</option>)}
                                 </Select>
                             </div>
-                            <CodeEditor value={outputCode} onChange={() => {}} language={targetLang} readOnly />
+                            <div className="h-[400px]">
+                                <CodeEditor value={outputCode} onChange={() => {}} language={targetLang} readOnly />
+                            </div>
                         </div>
                     </div>
 
@@ -191,9 +195,11 @@ export default function Home() {
                             <h2 className="text-xl font-semibold mb-4">AI Analysis</h2>
                             <p className="text-sm mb-4 text-gray-600 dark:text-gray-300">{analysis}</p>
                             {fixedCode && (
-                                <>
-                                    <div className="h-[250px]">
-                                        <CodeEditor value={fixedCode} onChange={() => {}} language={sourceLang} readOnly />
+                                <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
+                                    <div className="h-[120px] border border-gray-300 dark:border-gray-600 rounded overflow-hidden">
+                                        <pre className="h-full overflow-auto bg-black text-green-400 p-3 text-sm font-mono whitespace-pre-wrap">
+                                            {fixedCode}
+                                        </pre>
                                     </div>
                                     <div className="flex gap-4 mt-4">
                                         <Button onClick={handleReplaceFixed} variant="secondary">
@@ -203,7 +209,7 @@ export default function Home() {
                                             Copy Fixed Code
                                         </Button>
                                     </div>
-                                </>
+                                </div>
                             )}
                         </div>
                     )}

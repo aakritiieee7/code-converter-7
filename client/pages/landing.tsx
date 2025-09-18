@@ -30,12 +30,9 @@ export default function Landing() {
               </span> 
             </div>
             <div className="flex items-center space-x-2">
-              <Link href="/" passHref>
+              <Link href="/" legacyBehavior>
                 <a><Button variant="secondary" size="sm">Converter</Button></a>
               </Link>
-              <Button onClick={toggleTheme} variant="ghost" size="icon">
-                {theme === 'dark' ? '☀️' : '🌙'}
-              </Button>
             </div>
           </div>
         </header>
@@ -53,13 +50,22 @@ export default function Landing() {
               <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
                 Convert code between languages instantly. Fix bugs automatically. Get intelligent explanations. All powered by advanced AI.
               </p>
-              <Link href="/" passHref>
+              <Link href="/" legacyBehavior>
                 <a>
                   <Button size="lg" className="text-lg px-8 py-4">
                     Start Converting Now →
                   </Button>
                 </a>
               </Link>
+            </div>
+
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold bg-gradient-to-r from-baby-pink to-hot-pink bg-clip-text text-transparent">
+                Why DevTranslate?
+              </h2>
+              <p className="text-lg text-gray-400 mt-4">
+                From simple conversions to complex bug fixes, we've got you covered.
+              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
@@ -118,16 +124,22 @@ export default function Landing() {
                   Ready to Transform Your Code?
                 </span>
               </h2>
-              <Link href="/" passHref>
+              <Link href="/" legacyBehavior>
                 <a>
                   <Button size="lg" variant="outline" className="text-lg px-8 py-4">
-                    Get Started Free
+                    Get Started
                   </Button>
                 </a>
               </Link>
             </div>
           </div>
         </main>
+
+        <footer className="py-12 px-6 border-t border-white/10 relative z-10">
+          <div className="max-w-7xl mx-auto text-center text-gray-500">
+            <p>&copy; {new Date().getFullYear()} DevTranslate. All rights reserved.</p>
+          </div>
+        </footer>
       </div>
     </>
   );
