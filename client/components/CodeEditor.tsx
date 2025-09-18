@@ -24,48 +24,23 @@ export default function CodeEditor({ language, value, onChange, readOnly = false
           }
         }}
         theme={theme === 'dark' ? 'vs-dark' : 'vs-light'}
+        loading={
+          <div className={`h-full w-full flex items-center justify-center ${
+            theme === 'dark' ? 'bg-[#1e1e1e]' : 'bg-white'
+          }`}>
+            <p className={theme === 'dark' ? 'text-white' : 'text-black'}>Loading Editor...</p>
+          </div>
+        }
         options={{
           readOnly: readOnly,
           minimap: { enabled: true },
           fontSize: 14,
-          wordWrap: 'on',
-          scrollBeyondLastLine: false,
+          lineNumbers: 'on',
           automaticLayout: true,
-          bracketPairColorization: { enabled: true },
-          colorDecorators: true,
-          suggest: {
-            showKeywords: true,
-            showSnippets: true,
-            showWords: true,
-          },
-          occurrencesHighlight: 'multiFile',
-          selectionHighlight: true,
-          codeLens: true,
-          contextmenu: true,
-        }}
-        beforeMount={(monaco) => {
-          monaco.editor.defineTheme('enhanced-dark', {
-            base: 'vs-dark',
-            inherit: true,
-            rules: [],
-            colors: {
-              'editor.background': '#0D001F',
-              'editor.foreground': '#E0E0E0',
-            }
-          });
-          monaco.editor.defineTheme('enhanced-light', {
-            base: 'vs',
-            inherit: true,
-            rules: [],
-            colors: {
-              'editor.background': '#ffffff',
-              'editor.foreground': '#000000',
-            }
-          });
-        }}
-        onMount={(editor, monaco) => {
-          const currentTheme = theme === 'dark' ? 'enhanced-dark' : 'enhanced-light';
-          monaco.editor.setTheme(currentTheme);
+          scrollBeyondLastLine: false,
+          wordWrap: 'on',
+          tabSize: 2,
+          insertSpaces: true,
         }}
       />
     </div>

@@ -19,6 +19,7 @@ export default function Home() {
     const { theme, toggleTheme } = useTheme();
     const [inputCode, setInputCode] = useState('');
     const [outputCode, setOutputCode] = useState('');
+    const [fixedCode, setFixedCode] = useState('');
     const [sourceLang, setSourceLang] = useState<Language>('Python');
     const [targetLang, setTargetLang] = useState<Language>('Java');
     const [loading, setLoading] = useState(false);
@@ -33,15 +34,14 @@ export default function Home() {
             setSourceLang(itemToRerun.sourceLang as Language);
             setTargetLang(itemToRerun.targetLang as Language);
             setOutputCode('');
-            setAnalysis('');
+            setFixedCode('');
+            setAnalysis('Code loaded from history. Ready to convert.');
         }
     }, []);
 
     const apiBase = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001').replace(/\/$/, '');
 
     const handleConvert = async () => {
-        console.log('Convert button clicked!');
-        
         if (!inputCode.trim()) {
             setError('Please enter some code to convert');
             return;
@@ -50,49 +50,47 @@ export default function Home() {
         setLoading(true);
         setError('');
         setOutputCode('');
+        setFixedCode('');
         setAnalysis('');
         
         try {
-            const apiUrl = `${apiBase}/api/convert`;
-            console.log('Making API call to:', apiUrl);
-            
-            const response = await axios.post(apiUrl, {
+            const response = await axios.post(`${apiBase}/api/convert`, {
                 inputCode,
                 sourceLang,
-                targetLang
+                targetLang,
+                useAI: true
             });
             
-            console.log('API Response:', response.data);
+            const analysisText = response.data.analysis || 'No analysis provided.';
             
             if (response.data.convertedCode) {
                 setOutputCode(response.data.convertedCode);
-                setAnalysis(response.data.analysis || 'Conversion completed successfully.');
+                setAnalysis(analysisText);
                 
                 addToHistory({
                     sourceLang,
                     targetLang,
                     inputCode,
                     outputCode: response.data.convertedCode,
-                    analysis: response.data.analysis || 'Conversion completed successfully.',
+                    analysis: analysisText,
                     type: 'convert'
                 });
             } else if (response.data.fixedCode) {
-                setOutputCode(response.data.fixedCode);
-                setAnalysis(response.data.analysis || 'Code was fixed.');
+                setFixedCode(response.data.fixedCode);
+                setAnalysis(analysisText);
                 
                 addToHistory({
                     sourceLang,
                     targetLang,
                     inputCode,
                     outputCode: response.data.fixedCode,
-                    analysis: response.data.analysis || 'Code was fixed.',
+                    analysis: analysisText,
                     type: 'fix'
                 });
             } else {
-                setError('No converted code received from server.');
+                setError('Unexpected response format from server.');
             }
         } catch (err) {
-            console.error('Conversion error:', err);
             if (axios.isAxiosError(err)) {
                 if (err.response) {
                     setError(`Server error: ${err.response.data?.error || err.response.statusText}`);
@@ -109,22 +107,28 @@ export default function Home() {
         }
     };
 
+    const handleReplaceFixed = () => {
+        setInputCode(fixedCode);
+        setFixedCode('');
+        setAnalysis('Fixed code applied. Press Convert to get target code.');
+    };
+
     const handleClearAll = () => {
-        console.log('Clear All button clicked!');
         setInputCode('');
         setOutputCode('');
+        setFixedCode('');
         setAnalysis('');
         setError('');
     };
 
     const handleCopy = (text: string) => {
-        navigator.clipboard.writeText(text).then(() => {
-            alert('Copied to clipboard!');
-        });
+        if (!text) return;
+        navigator.clipboard.writeText(text);
+        alert('Copied to clipboard!');
     };
 
     return (
-        <div className={`flex flex-col min-h-screen font-sans transition-colors duration-300 ${theme === 'dark' ? 'bg-brand-dark text-white' : 'bg-gray-50 text-black'}`}>
+        <>
             <Head>
                 <title>AI Code Converter - DevTranslate</title>
                 <meta name="description" content="Convert code from one language to another" />
@@ -137,7 +141,7 @@ export default function Home() {
                         <div className="absolute bottom-[10%] right-[10%] w-72 h-72 bg-gradient-to-r from-baby-pink to-hot-pink rounded-full opacity-10 filter blur-3xl animate-blob-float animation-delay-4000" />
                     </div>
                 )}
-                
+
                 <header className="sticky top-0 z-50 bg-white/50 dark:bg-brand-dark/50 backdrop-blur-md border-b border-black/10 dark:border-white/10">
                     <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
                         <div className="flex items-center space-x-3 font-bold text-2xl">
@@ -159,93 +163,68 @@ export default function Home() {
                     </div>
                 </header>
 
-                <main className="flex-grow w-full max-w-7xl mx-auto p-4 md:p-6 relative z-10">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="flex flex-col space-y-4">
-                            <div className="flex items-center space-x-4">
-                                <span className="font-semibold">From:</span>
-                                <div className="flex-grow">
-                                    <Select
-                                        value={sourceLang}
-                                        onChange={(e) => setSourceLang(e.target.value as Language)}
-                                        disabled={loading}
-                                    >
-                                        {LANGUAGES.map(lang => (
-                                            <option key={lang} value={lang}>{lang}</option>
-                                        ))}
-                                    </Select>
-                                </div>
+                <main className="max-w-7xl mx-auto p-6 relative z-10">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div className="bg-white/80 dark:bg-brand-dark/50 p-6 rounded-2xl shadow-lg border border-black/10 dark:border-white/10 backdrop-blur-lg">
+                            <div className="flex justify-between items-center mb-4">
+                                <label className="text-lg font-medium">Source Code</label>
+                                <Select value={sourceLang} onChange={(e) => setSourceLang(e.target.value as Language)}>
+                                    {LANGUAGES.map((lang) => <option key={lang} value={lang}>{lang}</option>)}
+                                </Select>
                             </div>
-                            <div className="h-[400px]">
-                                <CodeEditor
-                                    language={sourceLang}
-                                    value={inputCode}
-                                    onChange={setInputCode}
-                                    readOnly={loading}
-                                />
-                            </div>
+                            <CodeEditor value={inputCode} onChange={setInputCode} language={sourceLang} />
                         </div>
-                        
-                        <div className="flex flex-col space-y-4">
-                            <div className="flex items-center space-x-4">
-                                <span className="font-semibold">To:</span>
-                                <div className="flex-grow">
-                                    <Select
-                                        value={targetLang}
-                                        onChange={(e) => setTargetLang(e.target.value as Language)}
-                                        disabled={loading}
-                                    >
-                                        {LANGUAGES.map(lang => (
-                                            <option key={lang} value={lang}>{lang}</option>
-                                        ))}
-                                    </Select>
-                                </div>
+
+                        <div className="bg-white/80 dark:bg-brand-dark/50 p-6 rounded-2xl shadow-lg border border-black/10 dark:border-white/10 backdrop-blur-lg">
+                            <div className="flex justify-between items-center mb-4">
+                                <label className="text-lg font-medium">Converted Code</label>
+                                <Select value={targetLang} onChange={(e) => setTargetLang(e.target.value as Language)}>
+                                    {LANGUAGES.map((lang) => <option key={lang} value={lang}>{lang}</option>)}
+                                </Select>
                             </div>
-                            <div className="h-[400px]">
-                                <CodeEditor 
-                                    value={outputCode} 
-                                    language={targetLang} 
-                                    onChange={setOutputCode}
-                                    readOnly 
-                                />
-                            </div>
+                            <CodeEditor value={outputCode} onChange={() => {}} language={targetLang} readOnly />
                         </div>
+                    </div>
+
+                    {analysis && (
+                        <div className="mt-8 bg-white/80 dark:bg-brand-dark/50 p-6 rounded-2xl shadow-lg border border-black/10 dark:border-white/10 backdrop-blur-lg">
+                            <h2 className="text-xl font-semibold mb-4">AI Analysis</h2>
+                            <p className="text-sm mb-4 text-gray-600 dark:text-gray-300">{analysis}</p>
+                            {fixedCode && (
+                                <>
+                                    <div className="h-[250px]">
+                                        <CodeEditor value={fixedCode} onChange={() => {}} language={sourceLang} readOnly />
+                                    </div>
+                                    <div className="flex gap-4 mt-4">
+                                        <Button onClick={handleReplaceFixed} variant="secondary">
+                                            Use Fixed Code
+                                        </Button>
+                                        <Button onClick={() => handleCopy(fixedCode)} variant="outline">
+                                            Copy Fixed Code
+                                        </Button>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    )}
+
+                    <div className="mt-8 flex justify-center gap-6">
+                        <Button onClick={handleConvert} disabled={loading} size="lg">
+                            {loading ? 'Converting...' : 'Convert Code'}
+                        </Button>
+                        <Button onClick={handleClearAll} variant="secondary" size="lg">
+                            Clear All
+                        </Button>
                     </div>
 
                     {error && (
-                        <div className="text-center text-red-500 dark:text-hot-pink mt-6 p-4 bg-red-500/10 rounded-lg border border-red-500/20">
+                        <p className="text-center text-red-500 dark:text-hot-pink mt-6 p-4 bg-red-500/10 rounded-lg border border-red-500/20">
                             {error}
-                        </div>
+                        </p>
                     )}
-
-                    {analysis && (
-                        <div className="mt-6 p-4 bg-brand-dark/50 rounded-lg">
-                            <h3 className="font-semibold mb-2">Analysis</h3>
-                            <p className="text-sm whitespace-pre-wrap">{analysis}</p>
-                            <Button onClick={() => handleCopy(analysis)} variant="outline" size="sm" className="mt-2">
-                                Copy Analysis
-                            </Button>
-                        </div>
-                    )}
-
-                    <div className="mt-8 flex justify-center gap-6 relative z-20">
-                        <button
-                            onClick={handleConvert}
-                            disabled={loading}
-                            className="px-8 py-3 bg-gradient-to-r from-deep-purple to-hot-pink text-white font-medium rounded-lg hover:shadow-lg hover:shadow-hot-pink/30 hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {loading ? 'Converting...' : 'Convert Code'}
-                        </button>
-                        <button
-                            onClick={handleClearAll}
-                            className="px-8 py-3 bg-gray-100 text-gray-800 hover:bg-gray-200 border border-gray-200 dark:bg-white/10 dark:text-white dark:hover:bg-white/20 dark:border-transparent font-medium rounded-lg transition-all duration-300"
-                        >
-                            Clear All
-                        </button>
-                    </div>
                 </main>
             </div>
-        </div>
+        </>
     );
 }
 
